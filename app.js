@@ -11,7 +11,7 @@ function fetchBooks() {
     .then(response => response.json())
     .then(books => {
       const bookList = document.querySelector('#book-list tbody');
-      bookList.innerHTML = '';
+      bookList.innerHTML = '';  // Clear current list
 
       books.forEach(book => {
         const row = document.createElement('tr');
@@ -20,8 +20,8 @@ function fetchBooks() {
           <td>${book.author}</td>
           <td>${book.isbn}</td>
           <td>
-            <button class="edit" onclick="editBook('${book.id}')">Edit</button>
-            <button class="delete" onclick="deleteBook('${book.id}')">Delete</button>
+            <button class="edit" onclick="editBook('${book._id}')">Edit</button>
+            <button class="delete" onclick="deleteBook('${book._id}')">Delete</button>
           </td>
         `;
         bookList.appendChild(row);
@@ -39,8 +39,10 @@ document.querySelector('#book-form').addEventListener('submit', function (e) {
   const isbn = document.querySelector('#isbn').value;
 
   if (id) {
+    // Update the book if an ID is present
     updateBook(id, { title, author, isbn });
   } else {
+    // Otherwise add a new book
     addBook({ title, author, isbn });
   }
 });
@@ -55,8 +57,8 @@ function addBook(book) {
     body: JSON.stringify(book),
   })
   .then(() => {
-    fetchBooks();
-    resetForm();
+    fetchBooks();  // Refresh book list
+    resetForm();   // Clear the form after submission
   });
 }
 
@@ -65,7 +67,7 @@ function editBook(id) {
   fetch(`${apiUrl}/${id}`)
     .then(response => response.json())
     .then(book => {
-      document.querySelector('#book-id').value = book.id;
+      document.querySelector('#book-id').value = book._id; // Use '_id' for MongoDB IDs
       document.querySelector('#title').value = book.title;
       document.querySelector('#author').value = book.author;
       document.querySelector('#isbn').value = book.isbn;
@@ -83,8 +85,8 @@ function updateBook(id, book) {
     body: JSON.stringify(book),
   })
   .then(() => {
-    fetchBooks();
-    resetForm();
+    fetchBooks();  // Refresh the book list
+    resetForm();   // Clear the form after updating
   });
 }
 
@@ -94,7 +96,7 @@ function deleteBook(id) {
     fetch(`${apiUrl}/${id}`, {
       method: 'DELETE',
     })
-    .then(() => fetchBooks());
+    .then(() => fetchBooks());  // Refresh the book list after deletion
   }
 }
 
